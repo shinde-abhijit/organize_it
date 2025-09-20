@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Logout{% endblock title %}
+{% block content %}
+<div class="flex justify-center items-center min-h-[70vh] px-4">
+    <div class="w-full max-w-md bg-white shadow-md rounded-2xl p-6 sm:p-8 text-center">
+        <h2 class="page-title">Confirm Logout</h2>
+        <p class="text-gray-600 mb-6">Are you sure you want to log out?</p>
+        <form method="post" class="flex flex-col sm:flex-row gap-3 justify-center">
+        {% csrf_token %}
+        <button type="submit" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+            Logout
+        </button>
+        <a href="{% url 'user_profile' %}" class="w-full sm:w-auto text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition">
+            Cancel
+        </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

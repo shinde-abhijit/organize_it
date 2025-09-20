@@ -1,0 +1,54 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock title %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base/base.css' %}">
+    {% tailwind_css %}
+</head>
+<body>
+    {% if messages %}
+        <div class="fixed top-4 left-1/2 transform -translate-x-1/2 space-y-2 z-50 w-full max-w-md">
+            {% for message in messages %}
+                <div 
+                    class="alert-message px-4 py-2 rounded-lg shadow-md text-white text-center transition-opacity duration-700
+                        {% if message.tags == 'success' %} bg-green-600 
+                        {% elif message.tags == 'error' %} bg-red-600 
+                        {% elif message.tags == 'warning' %} bg-yellow-600 
+                        {% else %} bg-blue-600 {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    
+    {% include 'components/navbar.html' %}
+
+    {% block content %}{% endblock content %}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".alert-message").forEach((alert) => {
+                // Show animation (slide in)
+                alert.classList.add("opacity-0", "translate-y-2");
+                setTimeout(() => {
+                    alert.classList.remove("opacity-0", "translate-y-2");
+                    alert.classList.add("opacity-100", "translate-y-0");
+                }, 100); // slight delay so animation triggers
+
+                // Auto hide after 3s
+                setTimeout(() => {
+                    alert.classList.remove("opacity-100", "translate-y-0");
+                    alert.classList.add("opacity-0", "-translate-y-2");
+                    setTimeout(() => alert.remove(), 700); // remove after fade
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>

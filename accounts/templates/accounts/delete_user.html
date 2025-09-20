@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}
+    Delete Account
+{% endblock title %}
+{% block content %}
+<div class="flex justify-center items-center min-h-[70vh] px-4">
+    <div class="w-full max-w-md bg-white shadow-md rounded-2xl p-6 sm:p-8">
+        <h2 class="page-title">Delete Account</h2>
+        <p class="text-gray-600 text-center mb-6">
+            Please confirm your password to delete your account permanently.
+        </p>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="text-left">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-3 mt-6">
+                <button type="submit" 
+                        class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+                    Delete
+                </button>
+                <a href="{% url 'user_profile' %}" 
+                   class="w-full sm:w-auto text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock title %}
+{% block content %}
+<div class="flex justify-center items-center min-h-[70vh] px-4">
+    <div class="w-full max-w-md bg-white shadow-md rounded-2xl p-6 sm:p-8">
+        <h2 class="page-title">Profile</h2>
+        <div class="space-y-2 text-gray-700">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>Contact:</strong> {{ user.contact }}</p>
+        <p><strong>Bio:</strong> {{ user.bio }}</p>
+        {% if user.profile_image %}
+            <div class="flex justify-center">
+            <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="w-24 h-24 rounded-full mt-4">
+            </div>
+        {% endif %}
+        </div>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <a href="{% url 'update_user' %}" class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg text-center hover:bg-blue-700 transition">Edit</a>
+        <a href="{% url 'delete_user' %}" class="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-lg text-center hover:bg-red-700 transition">Delete</a>
+        <a href="{% url 'logout_user' %}" class="w-full sm:w-auto bg-gray-600 text-white px-4 py-2 rounded-lg text-center hover:bg-gray-700 transition">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
