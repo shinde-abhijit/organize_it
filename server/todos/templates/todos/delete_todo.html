@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Delete Todo{% endblock title %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[70vh] px-4">
+    <div class="w-full max-w-md bg-white shadow-md rounded-2xl p-6 sm:p-8 text-center">
+        <h2 class="page-title">Delete Todo</h2>
+        <p class="mb-6 break-words">Are you sure you want to delete "<strong>{{ todo.title }}</strong>"?</p>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">
+                Delete Todo
+            </button>
+        </form>
+        <p class="mt-4 text-sm">
+            <a href="{% url 'todo_list' %}" class="text-blue-600 hover:underline">Cancel</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

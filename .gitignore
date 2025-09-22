@@ -1,72 +1,70 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# =========================
+# Node / React (client/)
+# =========================
+client/node_modules/
+client/build/
+client/.env
+client/.DS_Store
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+client/package-lock.json
+client/yarn.lock
 
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# =========================
+# Python / Django (server/)
+# =========================
+server/__pycache__/
+server/**/*.py[cod]
+server/*.sqlite3
+server/media/
+server/staticfiles/
+server/.env
+server/.DS_Store
+server/db.sqlite3
 
 # Virtual environment
-zenv/
-venv/
-ENV/
-env/
-env.bak/
-.venv/
+server/zenv/
+server/venv/
+server/env/
+server/.venv/
 
-# Django stuff:
+# =========================
+# General OS / Editor files
+# =========================
 *.log
 *.pot
 *.pyc
 *.pyo
-*.sqlite3
-db.sqlite3
-media/
-staticfiles/
-*.mo
-*.py[cod]
-local_settings.py
+*.pyd
+.Python
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.manifest
+*.spec
 
-# Django migrations
-*/migrations/*.py
-!*/migrations/__init__.py
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
 
-# Pytest cache
-.pytest_cache/
+# =========================
+# Coverage / Testing
+# =========================
+htmlcov/
+.coverage
+.coverage.*
+.cache
 nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
-
-# IDE / Editor files
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# dotenv
-.env
-.env.*
+.pytest_cache/

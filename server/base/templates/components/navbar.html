@@ -1,0 +1,131 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/components/navbar.css' %}">
+
+<header class="header-navbar-container">
+    <div class="header-container">
+        <div>
+            <h1 class="page-title">OrganizeMe</h1>
+        </div>
+        <nav>
+            <ul>
+                <li>Todo
+                    <ul class="dropdown">
+                        <li>
+                            <a href="{% url 'add_todo' %}">Add</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'todo_list' %}">List</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>User
+                    <ul class="dropdown">
+                        {% if user.is_authenticated %}
+                            <li>
+                                <a href="{% url 'user_profile' %}">Profile</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'update_user' %}">Update</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'delete_user' %}">Delete</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'logout_user' %}">Logout</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{% url 'register_user' %}">Register</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'login_user' %}">Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<style>
+
+.header-navbar-container {
+    background-color: #fff;
+    color: #000;
+    height: 5rem;
+    display: grid;
+    place-items: center;
+    margin-bottom: 40px;
+}
+
+.header-navbar-container .header-container {
+    background-color: #fff;
+    color: #000;
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-container nav ul {
+    list-style: none;
+    display: flex;
+    gap: 3rem;
+    height: 5rem;
+}
+
+.header-container nav ul li{
+    line-height: 5rem;
+    height: 5rem;
+    position: relative;
+    cursor: pointer;
+}
+
+.header-container ul.dropdown {
+    position: absolute;
+    background-color: #FFF;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #000;
+    height: auto;
+    min-width: 10rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10;
+    padding: .75rem 0;
+    gap: 1rem;
+    top: 10rem;
+    
+    visibility: hidden;
+    opacity: 0;    
+    transition: all 0.3s linear;    
+}
+
+.header-container ul li:hover, .header-container ul li a:hover {
+    color: red;
+}
+
+.header-container nav ul li:hover > ul.dropdown {
+    top: 5rem;
+    visibility: visible;
+    opacity: 1;
+}
+
+.header-container ul.dropdown li {
+    height: 2rem;
+    line-height: 2rem;
+    width: 100%;
+    text-align: center;
+    transition: all 0.3s linear;
+}
+
+.header-container ul.dropdown li:hover {
+    background-color: #f0f0f0;
+    transition: all 0.3s linear;
+}
+
+
+</style>
+

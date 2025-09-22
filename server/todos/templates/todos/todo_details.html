@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Todo Details{% endblock title %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white shadow rounded-lg">
+    <h2 class="page-title mb-4">Todo Details</h2>
+
+    <div class="space-y-2">
+        <p><strong>User:</strong> {{ todo.user.username }}</p>
+        <p class="break-words"><strong>Title:</strong> {{ todo.title }}</p>
+        <p><strong>Priority:</strong> {{ todo.priority }}</p>
+        {% if todo.due_date %}
+            <p><strong>Due Date:</strong> {{ todo.due_date|date:"M d, Y" }}</p>
+        {% endif %}
+        <p><strong>Status:</strong> 
+            {% if todo.is_completed %}
+                ✔ Completed
+            {% else %}
+                ⏳ Incomplete
+            {% endif %}
+        </p>
+        <p><strong>Created At:</strong> {{ todo.created_at|date:"M d, Y H:i" }}</p>
+        <p><strong>Updated At:</strong> {{ todo.updated_at|date:"M d, Y H:i" }}</p>
+    </div>
+
+    <div class="mt-6 space-x-2">
+        <a href="{% url 'update_todo' todo.pk %}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Edit
+        </a>
+        <a href="{% url 'delete_todo' todo.pk %}" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+            Delete
+        </a>
+        <a href="{% url 'todo_list' %}" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+            Back to List
+        </a>
+    </div>
+</div>
+{% endblock content %}

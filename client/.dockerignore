@@ -1,0 +1,8 @@
+Dockerfile
+.env
+.dockerignore
+zenv
+node_modules
+dist
+.vscode
+*.log

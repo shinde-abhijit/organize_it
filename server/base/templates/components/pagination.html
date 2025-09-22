@@ -1,0 +1,23 @@
+{% if page_obj.has_other_pages %}
+<div class="flex justify-center mt-6 space-x-2">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&laquo; Prev</a>
+    {% else %}
+        <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded">&laquo; Prev</span>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="px-3 py-1 bg-blue-600 text-white rounded">{{ num }}</span>
+        {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+            <a href="?page={{ num }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Next &raquo;</a>
+    {% else %}
+        <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded">Next &raquo;</span>
+    {% endif %}
+</div>
+{% endif %}

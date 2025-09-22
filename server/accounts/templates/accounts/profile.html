@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock title %}
+{% block content %}
+<div class="flex justify-center items-center min-h-[70vh] px-4 bg-gray-50">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-col items-center text-center">
+        <!-- Profile Image or Initials -->
+        {% if user.profile_image %}
+            <img 
+            src="{{ user.profile_image.url }}" 
+            alt="Profile Picture" 
+            class="w-24 h-24 rounded-full object-cover shadow-md"
+            >
+        {% else %}
+            <div class="w-24 h-24 flex items-center justify-center rounded-full bg-blue-600 text-white text-2xl font-bold shadow-md">
+            {{ user.first_name|default:"U"|first|upper }}{{ user.last_name|default:"N"|first|upper }}
+            </div>
+        {% endif %}
+
+        <!-- Name + Username -->
+        <h2 class="mt-4 text-xl font-semibold text-gray-800">
+            {{ user.first_name }} {{ user.last_name }}
+        </h2>
+        <p class="text-sm text-gray-500">@{{ user.username }}</p>
+        </div>
+
+        <!-- User Info -->
+        <div class="mt-6 space-y-3 text-gray-700">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Contact:</strong> {{ user.contact }}</p>
+        <p><strong>Bio:</strong> {{ user.bio|default:"No bio added yet." }}</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <a href="{% url 'update_user' %}" 
+            class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg text-center hover:bg-blue-700 transition">
+            Edit Profile
+        </a>
+        <a href="{% url 'delete_user' %}" 
+            class="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-lg text-center hover:bg-red-700 transition">
+            Delete
+        </a>
+        <a href="{% url 'logout_user' %}" 
+            class="w-full sm:w-auto bg-gray-600 text-white px-4 py-2 rounded-lg text-center hover:bg-gray-700 transition">
+            Logout
+        </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

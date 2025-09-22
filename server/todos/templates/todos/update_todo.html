@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Update Todo{% endblock title %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[70vh] px-4">
+    <div class="w-full max-w-md bg-white shadow-md rounded-2xl p-6 sm:p-8">
+        <h2 class="page-title">Update Todo</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition">
+                Update Todo
+            </button>
+        </form>
+        <p class="mt-4 text-sm text-center">
+            <a href="{% url 'todo_list' %}" class="text-blue-600 hover:underline">Back to Todo List</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

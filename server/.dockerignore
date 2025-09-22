@@ -1,0 +1,53 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django database
+*.sqlite3
+
+# Virtual environments
+zenv/
+venv/
+env/
+ENV/
+.venv/
+
+# Static files and media
+staticfiles/
+media/
+
+# Logs
+*.log
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# Environment files
+.env
+.env.*
+
+# Coverage / Test reports
+.coverage
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Node / Tailwind (if using Tailwind or npm for frontend)
+node_modules/
+dist/
+build/

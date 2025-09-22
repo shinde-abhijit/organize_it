@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Update{% endblock title %}
+{% block content %}
+<div class="w-full min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-lg bg-white p-6 sm:p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
+            Create Your Account
+        </h2>
+
+        <form method="post" enctype="multipart/form-data" class="flex flex-col gap-4">
+            {% csrf_token %}
+
+            <!-- Email -->
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-gray-700">
+                    Email
+                </label>
+                {{ form.email }}
+            </div>
+
+            <!-- Username -->
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">
+                    Username
+                </label>
+                {{ form.username }}
+            </div>
+
+            <!-- First + Last Name in grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="id_first_name" class="block text-sm font-medium text-gray-700">
+                        First Name
+                    </label>
+                    {{ form.first_name }}
+                </div>
+                <div>
+                    <label for="id_last_name" class="block text-sm font-medium text-gray-700">
+                        Last Name
+                    </label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <label for="id_contact" class="block text-sm font-medium text-gray-700">
+                    Contact Number
+                </label>
+                {{ form.contact }}
+            </div>
+
+            <!-- Bio -->
+            <div>
+                <label for="id_bio" class="block text-sm font-medium text-gray-700">
+                    Bio
+                </label>
+                {{ form.bio }}
+            </div>
+
+            <!-- Profile Image -->
+            <div>
+                <label for="id_profile_image" class="block text-sm font-medium text-gray-700">
+                    Profile Image
+                </label>
+                {{ form.profile_image }}
+            </div>
+
+            <div>
+                <label for="id_password" class="block text-sm font-medium text-gray-700">
+                    Password
+                </label>
+                {{ form.password }}
+            </div>
+
+
+            <!-- Submit -->
+            <button
+                type="submit"
+                class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+            >
+                Register
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
