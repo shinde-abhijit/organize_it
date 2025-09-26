@@ -1,38 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import {
   account_input_tailwind_classes,
   account_input_tailwind_file_classes,
   account_textarea_tailwind_classes,
 } from "./utils/utils";
+import { toast } from "react-hot-toast";
 
-const UserUpdate = () => {
+const UserRegister = () => {
   const [formData, setFormData] = useState({
+    email: "",
     username: "",
     first_name: "",
     last_name: "",
     contact: "",
     bio: "",
+    password: "",
+    password2: "",
     profile_image: null,
   });
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await axiosInstance.get("/accounts/profile/");
-        setFormData({
-          ...res.data,
-          profile_image: null, // don't overwrite file input
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchProfile();
+    document.title = "User Update";
   }, []);
-
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "profile_image") {
@@ -47,36 +38,50 @@ const UserUpdate = () => {
     try {
       const data = new FormData();
       for (let key in formData) {
-        if (formData[key] !== null) data.append(key, formData[key]);
+        data.append(key, formData[key]);
       }
 
-      await axiosInstance.put("/accounts/update/", data, {
+      await axiosInstance.post("/accounts/register/", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setMessage("Profile updated successfully!");
-      setError(null);
+      toast.success("Registration successful!");
+      navigate("/login");
     } catch (err) {
-      setError(err.response?.data || "Something went wrong");
-      setMessage(null);
+      const responseData = err.response?.data;
+      if (responseData && typeof responseData === "object") {
+        const messages = Object.values(responseData).flat().join(" | ");
+        toast.error(messages);
+      } else {
+        toast.error(err.message || "Something went wrong");
+      }
     }
   };
 
   return (
-    <div className="w-full flex items-center justify-center px-4">
+    <div className="flex items-center justify-center px-4">
       <div className="w-full max-w-lg bg-white p-6 sm:p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Update Profile
+          Create Your Account
         </h2>
 
-        {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
-        {error && (
-          <p className="text-red-500 text-sm mb-4 break-words">
-            {typeof error === "string" ? error : JSON.stringify(error)}
-          </p>
-        )}
-
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              className={account_input_tailwind_classes}
+              required
+            />
+          </div>
+
           {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -85,7 +90,7 @@ const UserUpdate = () => {
             <input
               type="text"
               name="username"
-              placeholder="Username"
+              placeholder="Choose a username"
               value={formData.username}
               onChange={handleChange}
               className={account_input_tailwind_classes}
@@ -93,7 +98,7 @@ const UserUpdate = () => {
             />
           </div>
 
-          {/* First + Last name in grid */}
+          {/* First + Last name in grid on larger screens */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -102,7 +107,7 @@ const UserUpdate = () => {
               <input
                 type="text"
                 name="first_name"
-                placeholder="First Name"
+                placeholder="First name"
                 value={formData.first_name}
                 onChange={handleChange}
                 className={account_input_tailwind_classes}
@@ -117,7 +122,7 @@ const UserUpdate = () => {
               <input
                 type="text"
                 name="last_name"
-                placeholder="Last Name"
+                placeholder="Last name"
                 value={formData.last_name}
                 onChange={handleChange}
                 className={account_input_tailwind_classes}
@@ -138,6 +143,7 @@ const UserUpdate = () => {
               value={formData.contact}
               onChange={handleChange}
               className={account_input_tailwind_classes}
+              required
             />
           </div>
 
@@ -170,12 +176,45 @@ const UserUpdate = () => {
             />
           </div>
 
+          {/* Password */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                value={formData.password}
+                onChange={handleChange}
+                className={account_input_tailwind_classes}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="password2"
+                placeholder="Confirm password"
+                value={formData.password2}
+                onChange={handleChange}
+                className={account_input_tailwind_classes}
+                required
+              />
+            </div>
+          </div>
+
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
           >
-            Update Profile
+            Register
           </button>
         </form>
       </div>
@@ -183,4 +222,4 @@ const UserUpdate = () => {
   );
 };
 
-export default UserUpdate;
+export default UserRegister;

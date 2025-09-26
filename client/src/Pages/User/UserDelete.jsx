@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import { account_input_tailwind_classes } from "./utils/utils";
@@ -8,6 +8,11 @@ const UserDelete = () => {
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Delete user account?";
+  }, []);
+  
 
   const handleDelete = async () => {
     try {

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-hot-toast"; // ✅ react-hot-toast
 import axiosInstance from "../../api/axiosInstance";
 import { todo_input_classes } from "./utils/utils";
 
@@ -10,16 +11,16 @@ const AddTodo = () => {
     title: "",
     priority: "Low",
     due_date: "",
-    is_completed: false, // ✅ Added is_completed
+    is_completed: false,
   });
-
-  const [error, setError] = useState(null);
-
+  useEffect(() => {
+    document.title = "Add Todo";
+  }, []);
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setTodo({
       ...todo,
-      [name]: type === "checkbox" ? checked : value, // Handle checkbox
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
@@ -28,13 +29,25 @@ const AddTodo = () => {
     try {
       const payload = {
         ...todo,
-        due_date: todo.due_date === "" ? null : todo.due_date, // Handle empty date
+        due_date: todo.due_date === "" ? null : todo.due_date,
       };
       await axiosInstance.post("todo/", payload);
-      navigate("/todos"); // Redirect to TodoList after adding
+      toast.success("Todo added successfully!"); // ✅ success toast
+      navigate("/todos");
     } catch (err) {
-      console.error(err.response?.data || err.message);
-      setError(err.response?.data || err.message || "Failed to add todo");
+      const data = err.response?.data;
+
+      if (data && typeof data === "object") {
+        Object.values(data).forEach((messages) => {
+          if (Array.isArray(messages)) {
+            messages.forEach((message) => toast.error(message)); // show each error
+          } else {
+            toast.error(messages);
+          }
+        });
+      } else {
+        toast.error(err.message || "Failed to add todo");
+      }
     }
   };
 
@@ -42,8 +55,6 @@ const AddTodo = () => {
     <div className="flex justify-center items-center mx-auto px-4">
       <div className="w-full max-w-md bg-white shadow-md rounded-2xl p-6 sm:p-8">
         <h2 className="text-2xl font-bold mb-4 text-center">Add Todo</h2>
-
-        {error && <p className="text-red-500 mb-4 text-center">{JSON.stringify(error)}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

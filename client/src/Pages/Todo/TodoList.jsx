@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../api/axiosInstance";
-import { Link } from "react-router-dom"; // For navigation
+import { Link } from "react-router-dom";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Fetch todos from API
+  useEffect(() => {
+    document.title = "Todo List";
+  }, []);
   useEffect(() => {
     const fetchTodos = async () => {
       try {
@@ -23,15 +24,12 @@ const TodoList = () => {
     fetchTodos();
   }, []);
 
-  // Handlers for mark complete/incomplete and delete
   const toggleComplete = async (id, isCompleted) => {
     try {
-      // Send PATCH request to update the `is_completed` field
       await axiosInstance.patch(`todo/${id}/`, {
         is_completed: !isCompleted,
       });
 
-      // Update local state
       setTodos((prev) =>
         prev.map((todo) =>
           todo.id === id ? { ...todo, is_completed: !isCompleted } : todo
@@ -41,7 +39,6 @@ const TodoList = () => {
       console.error(err);
     }
   };
-
 
   const deleteTodo = async (id) => {
     try {
@@ -57,6 +54,8 @@ const TodoList = () => {
 
   const completedCount = todos.filter((todo) => todo.is_completed).length;
   const incompleteCount = todos.length - completedCount;
+
+  const today = new Date().setHours(0, 0, 0, 0); // Today's date at midnight
 
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow rounded-lg">
@@ -82,45 +81,53 @@ const TodoList = () => {
         </div>
       ) : (
         <ul className="space-y-4">
-          {todos.map((todo, index) => (
-            <li
-              key={todo.id || index}
-              className={`p-4 rounded-lg ${todo.is_completed ? "bg-green-50" : "bg-gray-50"} hover:shadow-md transition`}
-            >
-              <div>
-                <h3 className={`font-semibold break-words ${todo.is_completed ? "line-through text-gray-500" : ""}`}>
-                  {todo.title}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Priority: {todo.priority} {todo.due_date && `| Due: ${new Date(todo.due_date).toLocaleDateString()}`}
-                </p>
-                <p className={`text-xs ${todo.is_completed ? "text-green-600" : "text-red-600"}`}>
-                  {todo.is_completed ? "✔ Completed" : "⏳ Incomplete"}
-                </p>
-              </div>
+          {todos.map((todo, index) => {
+            const dueDate = todo.due_date ? new Date(todo.due_date).setHours(0, 0, 0, 0) : null;
+            const canToggle = !dueDate || dueDate <= today;
 
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  onClick={() => toggleComplete(todo.id, todo.is_completed)}
-                  className={`px-3 py-1 rounded text-white text-sm ${
-                    todo.is_completed ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
-                  }`}
-                >
-                  {todo.is_completed ? "Mark Incomplete" : "Mark Complete"}
-                </button>
+            return (
+              <li
+                key={todo.id || index}
+                className={`p-4 rounded-lg ${todo.is_completed ? "bg-green-50" : "bg-gray-50"} hover:shadow-md transition`}
+              >
+                <div>
+                  <h3 className={`font-semibold break-words ${todo.is_completed ? "line-through text-gray-500" : ""}`}>
+                    {todo.title}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Priority: {todo.priority} {todo.due_date && `| Due: ${new Date(todo.due_date).toLocaleDateString()}`}
+                  </p>
+                  <p className={`text-xs ${todo.is_completed ? "text-green-600" : "text-red-600"}`}>
+                    {todo.is_completed ? "✔ Completed" : "⏳ Incomplete"}
+                  </p>
+                </div>
 
-                <Link to={`/update-todo/${todo.id}`} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
-                  Edit
-                </Link>
-                <Link to={`/todo-details/${todo.id}`} className="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-sm">
-                  Details
-                </Link>
-                <Link to={`/delete-todo/${todo.id}`} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
-                  Delete
-                </Link>
-              </div>
-            </li>
-          ))}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {/* ✅ Only show toggle button if no due date or due date is today/past */}
+                  {canToggle && (
+                    <button
+                      onClick={() => toggleComplete(todo.id, todo.is_completed)}
+                      className={`px-3 py-1 rounded text-white text-sm ${
+                        todo.is_completed ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
+                      }`}
+                    >
+                      {todo.is_completed ? "Mark Incomplete" : "Mark Complete"}
+                    </button>
+                  )}
+
+                  <Link to={`/update-todo/${todo.id}`} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                    Edit
+                  </Link>
+                  <Link to={`/todo-details/${todo.id}`} className="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-sm">
+                    Details
+                  </Link>
+                  <Link to={`/delete-todo/${todo.id}`} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
+                    Delete
+                  </Link>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

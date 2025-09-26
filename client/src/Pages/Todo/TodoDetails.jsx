@@ -7,7 +7,9 @@ const TodoDetails = () => {
   const [todo, setTodo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  useEffect(() => {
+    document.title = "Todo Details";
+  }, []);
   useEffect(() => {
     const fetchTodo = async () => {
       try {

@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import { todo_input_classes } from "./utils/utils";
+import toast from "react-hot-toast"
+import Loader from "../Components/Loader";
 
 const UpdateTodo = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    document.title = "Todo Update";
+  }, []);
   const [todo, setTodo] = useState({
     title: "",
     priority: "Low",
@@ -26,7 +30,7 @@ const UpdateTodo = () => {
           due_date: response.data.due_date ? response.data.due_date.split("T")[0] : "",
         });
       } catch (err) {
-        setError(err.response?.data || err.message || "Failed to fetch todo");
+        toast.error(err.response?.data || err.message || "Failed to fetch todo");
       } finally {
         setLoading(false);
       }
@@ -52,13 +56,23 @@ const UpdateTodo = () => {
       await axiosInstance.put(`todo/${id}/`, payload);
       navigate("/todos"); // Redirect after update
     } catch (err) {
-      console.error(err.response?.data || err.message);
-      setError(err.response?.data || err.message || "Failed to update todo");
+      const data = err.response?.data;
+
+      // If DRF validation error object
+      if (data && typeof data === "object") {
+        Object.values(data).forEach((messages) => {
+          if (Array.isArray(messages)) {
+            messages.forEach((message) => toast.error(message));
+          }
+        });
+      } else {
+        toast.error(err.message || "Failed to update todo");
+      }
     }
-  };
+  }
 
   if (loading)
-    return <div className="text-center mt-10 text-gray-500">Loading todo...</div>;
+    return <><Loader /></>;
   if (error)
     return <div className="text-center mt-10 text-red-500">{JSON.stringify(error)}</div>;
 

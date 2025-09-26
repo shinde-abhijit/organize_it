@@ -8,6 +8,7 @@ const UserProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "User Profile";
     const fetchProfile = async () => {
       try {
         const res = await axiosInstance.get("/accounts/profile/");

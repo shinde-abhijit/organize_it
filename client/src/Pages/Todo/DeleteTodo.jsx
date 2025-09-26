@@ -7,7 +7,9 @@ const DeleteTodo = () => {
   const navigate = useNavigate();
   const [todoTitle, setTodoTitle] = useState("");
   const [loading, setLoading] = useState(true);
-
+  useEffect(() => {
+    document.title = "Delete Todo";
+  }, []);
   // Fetch todo title for confirmation message
   useEffect(() => {
     const fetchTodo = async () => {

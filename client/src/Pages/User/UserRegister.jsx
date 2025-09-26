@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
+import { toast } from "react-hot-toast";
 import {
   account_input_tailwind_classes,
   account_input_tailwind_file_classes,
@@ -19,9 +20,11 @@ const UserRegister = () => {
     password2: "",
     profile_image: null,
   });
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.title = "User Register";
+  }, []);
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "profile_image") {
@@ -43,10 +46,17 @@ const UserRegister = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Registration successful!");
+      toast.success("Registration successful!");
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data || "Something went wrong");
+      // Show error using toast
+      const message =
+        err.response?.data?.error ||
+        err.response?.data ||
+        "Something went wrong";
+      toast.error(
+        typeof message === "string" ? message : JSON.stringify(message)
+      );
     }
   };
 
@@ -56,12 +66,6 @@ const UserRegister = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Create Your Account
         </h2>
-
-        {error && (
-          <p className="text-red-500 text-sm mb-4 break-words">
-            {typeof error === "string" ? error : JSON.stringify(error)}
-          </p>
-        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Email */}
@@ -96,7 +100,7 @@ const UserRegister = () => {
             />
           </div>
 
-          {/* First + Last name in grid on larger screens */}
+          {/* First + Last name */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
