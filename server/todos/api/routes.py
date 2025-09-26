@@ -1,9 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .viewset import ContactViewSet
+from .viewsets import TodoViewSet
 
 router = DefaultRouter()
-router.register(r'', ContactViewSet, basename='contacts')
+router.register(r'', TodoViewSet, basename='todos')
 
 urlpatterns = [
     path('', include(router.urls)),

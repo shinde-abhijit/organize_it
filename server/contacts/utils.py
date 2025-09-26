@@ -4,44 +4,62 @@ from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
 import magic
 
-
-CONTACT_GROUP = [
-    ("Mother", "Mother"),
-    ("Father", "Mother"),
-    ("Brother", "Brother"),
-    ("Sister", "Mother"),
-    ("Colleague", "Colleague"),
-    ("Family", "Family"),
-    ("Friends", "Friends"),
-    ("Manager", "Manager"),
-    ("Client", "Client"),
-    ("Other", "Other"),
-    ("Neighbors", "Neighbors"),
-    ("Relatives", "Relatives"),
-    ("Work", "Work"),
-]
-
-COMMUNICATION_METHOD = [
-    ("Call", "Call"), 
-    ("Email", "Email"), 
-    ("SMS", "SMS"), 
-    ("Other", "Other"), 
-]
+contact_image_ext_validator = FileExtensionValidator(['png', 'jpg', 'jpeg'])
 
 def rename_contact_image(instance, filename):
     # File extension
     ext = filename.split('.')[-1].lower()
     # Get first and last name, fallback if empty
-    username = instance.user.username if instance.username else instance.user.first_name
     first = instance.first_name if instance.first_name else "user"
-    primary_contact = instance.primary_contact if instance.primary_contact else "contact"
+    last = instance.last_name if instance.last_name else "profile"
     # Clean spaces and lowercase
     first = first.strip().replace(" ", "_").lower()
-    primary_contact = primary_contact.strip().replace(" ", "_").lower()
+    last = last.strip().replace(" ", "_").lower()
     # Current datetime
     timestamp = timezone.now().strftime("%Y%m%d%H%M%S")
     # New filename
-    new_filename = f"{primary_contact}_{first}_{timestamp}.{ext}"
+    new_filename = f"{first}_{last}_{timestamp}.{ext}"
     # Folder path: each image gets its own folder
-    folder_name = f"{username}_{primary_contact}_{first}_{timestamp}"
-    return os.path.join("user_contact_images", folder_name, new_filename)
+    folder_name = f"{first}_{last}_{timestamp}"
+    return os.path.join("profile_pics", folder_name, new_filename)
+
+
+def validate_file_mime_type(file):
+    accept = ['image/jpeg', 'image/jpg', 'image/png']
+    file_mime_type = magic.from_buffer(file.read(1024), mime=True)
+    if file_mime_type not in accept:
+        raise ValidationError("Unsupported file type.")
+
+contact_input_tailwind_classes = (
+    "w-full px-4 py-2 rounded-lg shadow-sm border-none outline-none "
+    "ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-600 "
+    "disabled:bg-gray-100 disabled:cursor-not-allowed "
+    "placeholder-gray-400 text-gray-800 "
+    "transition duration-200 ease-in-out "
+)
+
+contact_input_tailwind_file_classes = (
+    "block w-full text-sm text-gray-700 "
+    "file:mr-4 file:py-2 file:px-4 "
+    "file:rounded-lg file:border-0 "
+    "file:text-sm file:font-semibold "
+    "file:bg-blue-600 file:text-white "
+    "hover:file:bg-blue-700 "
+    "cursor-pointer"
+)
+
+contact_textarea_tailwind_classes = (
+    "w-full px-4 py-2 rounded-lg shadow-sm border-none outline-none h-20 resize-none "
+    "ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-600 "
+    "disabled:bg-gray-100 disabled:cursor-not-allowed "
+    "placeholder-gray-400 text-gray-800 "
+    "transition duration-200 ease-in-out "
+)
+
+CONTACT_CATEGORY = [
+    ("Family", "Family"),
+    ("Friend", "Friend"),
+    ("Colleague", "Colleague"),
+    ("Relative", "Relative"),
+    ("Other", "Other"),
+]

@@ -15,8 +15,8 @@ INSTALLED_APPS = [
     "accounts",
     "base",
     "contacts",
-    "tailwind",
     "todos",
+    "tailwind",
     "theme",
     
     "corsheaders",
@@ -143,3 +143,6 @@ SIMPLE_JWT = {
     # Blacklist old refresh tokens when rotated
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+LOGIN_URL = '/login/'
+

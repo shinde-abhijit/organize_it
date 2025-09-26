@@ -15,11 +15,11 @@ urlpatterns = [
 
     # todo url and api routes
     path('todo/', include("todos.urls")),
-    path('api/todo/', include("todos.api.urls")),
+    path('api/todo/', include("todos.api.routes")),
 
-    # contacts url and api routes
+    # contact url and api routes
     path('contact/', include("contacts.urls")),
-    path('api/contact/', include("contacts.api.urls")),
+    path('api/contact/', include("contacts.api.routes")),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

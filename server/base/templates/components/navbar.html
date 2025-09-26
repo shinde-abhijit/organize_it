@@ -8,16 +8,30 @@
         </div>
         <nav>
             <ul>
-                <li>Todo
-                    <ul class="dropdown">
-                        <li>
-                            <a href="{% url 'add_todo' %}">Add</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'todo_list' %}">List</a>
-                        </li>
-                    </ul>
-                </li>
+                {% if user.is_authenticated %}
+                    <li>Contact
+                        <ul class="dropdown">
+                            <li>
+                                <a href="{% url 'add_contact' %}">Add</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'contact_list' %}">List</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li>Todo
+                        <ul class="dropdown">
+                            <li>
+                                <a href="{% url 'add_todo' %}">Add</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'todo_list' %}">List</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
                 <li>User
                     <ul class="dropdown">
                         {% if user.is_authenticated %}

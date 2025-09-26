@@ -21,16 +21,33 @@ def register_user(request):
 
 
 def login_user(request):
+    next_url = request.GET.get('next', '')  # capture `next` from GET
     if request.method == "POST":
         form = UserLoginForm(request, data=request.POST)
+        next_url = request.POST.get('next', '')  # capture `next` from POST
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             messages.success(request, f"Welcome back {user.username}!")
-            return redirect("user_profile")
+            # Redirect to `next` if exists, else to profile
+            return redirect(next_url or "user_profile")
     else:
         form = UserLoginForm()
-    return render(request, "accounts/login.html", {"form": form})
+    return render(request, "accounts/login.html", {"form": form, "next": next_url})
+
+
+
+# def login_user(request):
+#     if request.method == "POST":
+#         form = UserLoginForm(request, data=request.POST)
+#         if form.is_valid():
+#             user = form.get_user()
+#             login(request, user)
+#             messages.success(request, f"Welcome back {user.username}!")
+#             return redirect("user_profile")
+#     else:
+#         form = UserLoginForm()
+#     return render(request, "accounts/login.html", {"form": form})
 
 
 @login_required

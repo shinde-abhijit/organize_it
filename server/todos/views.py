@@ -3,6 +3,7 @@ from todos.models import Todo
 from todos.forms import TodoForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 # Add new todo
 @login_required
@@ -32,17 +33,46 @@ def add_todo(request):
 
 # List all todos for the current user
 @login_required
+def mark_complete(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    today = timezone.now().date()
+    
+    # Allow marking complete only if due_date is today or passed
+    if not todo.due_date or todo.due_date <= today:
+        todo.is_completed = True
+        todo.save()
+    return redirect('todo_list')
+
+
+@login_required
+def mark_incomplete(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    today = timezone.now().date()
+
+    # Allow marking incomplete only if due_date is today or passed
+    if not todo.due_date or todo.due_date <= today:
+        todo.is_completed = False
+        todo.save()
+    return redirect('todo_list')
+
+
+@login_required
 def todo_list(request):
-    todos = Todo.objects.filter(user=request.user)
+    todos = Todo.objects.filter(user=request.user).order_by("-created_at")
     completed_count = todos.filter(is_completed=True).count()
     incomplete_count = todos.filter(is_completed=False).count()
+    today = timezone.now().date()
 
-    return render(request, "todos/todo_list.html", {
-        "todos": todos,
-        "completed_count": completed_count,
-        "incomplete_count": incomplete_count,
-    })
-
+    return render(
+        request,
+        "todos/todo_list.html",
+        {
+            "todos": todos,
+            "completed_count": completed_count,
+            "incomplete_count": incomplete_count,
+            "today": today,
+        }
+    )
 
 # Delete a todo
 @login_required
@@ -82,20 +112,6 @@ def update_todo(request, pk):
     return render(request, "todos/update_todo.html", {"form": form, "todo": todo})
 
 
-@login_required
-def mark_completed(request, pk):
-    todo = get_object_or_404(Todo, pk=pk, user=request.user)
-    todo.is_completed = True
-    todo.save()
-    return redirect('todo_list')
-
-
-@login_required
-def mark_incomplete(request, pk):
-    todo = get_object_or_404(Todo, pk=pk, user=request.user)
-    todo.is_completed = False
-    todo.save()
-    return redirect('todo_list')
 
 
 @login_required

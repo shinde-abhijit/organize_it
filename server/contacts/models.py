@@ -1,191 +1,98 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from accounts.models import CustomUser
-from django.utils import timezone
 import re
+from accounts.models import CustomUser
 from contacts.utils import (
-    CONTACT_GROUP, COMMUNICATION_METHOD, rename_contact_image
+    rename_contact_image, contact_image_ext_validator, 
+    CONTACT_CATEGORY 
 )
-from accounts.utils import validate_file_mime_type, ext_validator
-from contacts.field_validators import (
-    NAME_REGEX, CONTACT_REGEX, validate_first_name, validate_middle_name, validate_last_name, validate_nick_name, 
-    validate_primary_contact, validate_alternate_contact, validate_birth_date
-)
-from datetime import date
+
+ALLOWED_EMAIL_DOMAINS = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "live.com"]
+
+name_pattern = r"^[A-Za-z\s'-]+$"
 
 class Contact(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="contacts")
+    first_name = models.CharField(max_length=30, blank=False, db_index=True)
+    last_name = models.CharField(max_length=30, blank=False, db_index=True)
+    primary_contact = models.CharField(max_length=13, blank=False)
+    secondary_contact = models.CharField(max_length=13, blank=False)
+    address = models.TextField(blank=True)
+    city = models.CharField(max_length=50, blank=True, db_index=True)
+    state = models.CharField(max_length=50, blank=True)
+    country = models.CharField(max_length=50, blank=True)
+    primary_email = models.EmailField()
+    secondary_email = models.EmailField()
+    image = models.FileField(upload_to=rename_contact_image, validators=[contact_image_ext_validator], blank=True, null=True)
+    category = models.CharField(max_length=30, blank=False, default="Other", choices=CONTACT_CATEGORY)
 
-    # Basic Information
-    first_name = models.CharField(
-        max_length=25,
-        blank=False,
-        validators=[validate_first_name]
-    )
-    middle_name = models.CharField(
-        max_length=25, 
-        blank=True,
-        validators=[validate_middle_name]
-    )
-    last_name = models.CharField(
-        max_length=25, 
-        validators=[validate_last_name],
-        blank=False,
-    )
-    nick_name = models.CharField(
-        max_length=25, 
-        validators=[validate_nick_name],
-        blank=True,
-    )
-    birth_date = models.DateField(
-        blank=True, 
-        null=True,
-        validators=[validate_birth_date],
-    ) 
-
-    # Communication Information
-    primary_contact = models.CharField(
-        max_length=13, 
-        blank=False,
-        validators=[validate_primary_contact]
-    )
-    alternate_contact = models.CharField(
-        max_length=13, 
-        blank=True,
-        validators=[validate_alternate_contact]
-    )
-    primary_email = models.EmailField(blank=True)
-    alternate_email = models.EmailField(blank=True)
-
-    # Social Media Accounts
-    linkedin_username = models.CharField(
-        max_length=40, 
-        blank=True
-    )
-    instagram_username = models.CharField(
-        max_length=40, 
-        blank=True
-    )
-    github_username = models.CharField(
-        max_length=40, 
-        blank=True
-    )
-    facebook_username = models.CharField(
-        max_length=40, 
-        blank=True
-    )
-    twitter_x_username = models.CharField(
-        max_length=40, 
-        blank=True
-    )
-
-    # Address
-    address = models.CharField(
-        max_length=100, 
-        blank=False
-    )
-    city = models.CharField(
-        max_length=50, 
-        blank=False
-    )
-    state = models.CharField(
-        max_length=50, 
-        blank=True
-    )
-    country = models.CharField(
-        max_length=50, 
-        blank=True, 
-        default="India"
-    )
-
-    # Professional Details
-    company_name = models.CharField(
-        max_length=50, 
-        blank=True
-    )
-    job_title = models.CharField(
-        max_length=30, 
-        blank=True
-    )
-    work_email = models.EmailField(blank=True)
-    work_phone = models.CharField(
-        max_length=15, 
-        blank=True
-    )
-    website = models.CharField(
-        max_length=100, 
-        blank=True
-    )
-
-    # Optional
-    preferred_communication_method = models.CharField(
-        max_length=15, 
-        choices=COMMUNICATION_METHOD, 
-        blank=False, 
-        null=False
-    )
-    contact_group = models.CharField(
-        max_length=15, 
-        choices=CONTACT_GROUP, 
-        blank=False, 
-        null=False
-    )
-    is_emergency = models.BooleanField(default=False)
     is_favorite = models.BooleanField(default=False)
-
-    notes = models.TextField(blank=True)
-    contact_image = models.FileField(upload_to=rename_contact_image, 
-        validators=[ext_validator, validate_file_mime_type],
-        blank=True, 
-        null=True
-    )
-    
+    is_emergency_contact = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self):
-        super().clean()
-        primary = self.primary_email
-        alternate = self.alternate_email
-        
-        # Name validation
-        if not NAME_REGEX.match(self.first_name):
-            raise ValidationError({"first_name":"Invalid First name format."})
-        if not NAME_REGEX.match(self.middle_name):
-            raise ValidationError({"middle_name":"Invalid Middle name format."})
-        if not NAME_REGEX.match(self.last_name):
-            raise ValidationError({"last_name":"Invalid Last name format."})
-        if not NAME_REGEX.match(self.nick_name):
-            raise ValidationError({"nick_name":"Invalid Nick name format."})
-        if self.first_name.lowe() == self.last_name.lower():
-            raise ValidationError("First and Last name can not be same.")
-        
-        # Contact validation
-        if not CONTACT_REGEX.match(self.primary_contact):
-            raise ValidationError({"primary_contact": "Invalid contact format."})
-        if not CONTACT_REGEX.match(self.alternate_contact):
-            raise ValidationError({"alternate_contact": "Invalid contact format."})
-        if self.alternate_contact and self.primary_contact == self.alternate_contact:
-            raise ValidationError({"alternate_contact": "Alternate and Primary contact can not be same."})
+        name_pattern = r'^[A-Za-z]+$'  # letters only
 
-        # Birth date validation
-        if self.birth_date:
-            raise ValidationError({"birth_date":"Birth date can not be in the future."})
+        # --- Validate first_name and last_name ---
+        if self.first_name and not re.match(name_pattern, self.first_name):
+            raise ValidationError("First name can contain letters only.")
 
-        # Email validation
-        if primary:
-            if '@' not in primary or '.' not in primary.split('@')[-1]:
-               raise ValidationError({"primary_email":"Primary email is invalid."})
-        if alternate:
-            if '@' not in alternate or '.' not in alternate.split('@')[-1]:
-               raise ValidationError({"alternate_email":"Alternate email is invalid."})
-        if primary and alternate and primary.lower() == alternate.lower():
-            raise ValidationError({"alternate_email":"Alternate email can not be same as primary email ."})
-            
-                
+        if self.last_name and not re.match(name_pattern, self.last_name):
+            raise ValidationError("Last name can contain letters only.")
+
+        if self.first_name and self.last_name and self.first_name.lower() == self.last_name.lower():
+            raise ValidationError("First and Last name can't be the same.")
+
+        # --- Validate primary and secondary contact numbers ---
+        if not re.match(r'^\d{10,13}$', self.primary_contact):
+            raise ValidationError("Primary contact must be 10–13 digits.")
+
+        if not re.match(r'^\d{10,13}$', self.secondary_contact):
+            raise ValidationError("Secondary contact must be 10–13 digits.")
+
+        # Ensure contacts are not the same
+        if self.primary_contact == self.secondary_contact:
+            raise ValidationError("Primary and Secondary contact numbers can't be the same.")
+
+        # --- Validate emails ---
+        primary_domain = self.primary_email.split("@")[-1].lower()
+        if primary_domain not in ALLOWED_EMAIL_DOMAINS:
+            raise ValidationError("Email must be from allowed domains.")
+
+        secondary_domain = self.secondary_email.split("@")[-1].lower()
+        if secondary_domain not in ALLOWED_EMAIL_DOMAINS:
+            raise ValidationError("Email must be from allowed domains.")
+
+        # Ensure emails are not the same
+        if self.primary_email.lower() == self.secondary_email.lower():
+            raise ValidationError("Primary and Secondary emails can't be the same.")
+
+        # --- Validate city, state, country (letters + spaces only) ---
+        for field_name in ["city", "state", "country"]:
+            value = getattr(self, field_name)
+            if value and not re.match(r'^[A-Za-z ]+$', value):
+                raise ValidationError({
+                    field_name: f"{field_name.capitalize()} can contain letters and spaces only."
+                })
+
+        # --- Ensure city, state, country are not the same ---
+        if self.city and self.state and self.city.lower() == self.state.lower():
+            raise ValidationError({"state": "State can't be the same as City."})
+
+        if self.city and self.country and self.city.lower() == self.country.lower():
+            raise ValidationError({"country": "Country can't be the same as City."})
+
+        if self.state and self.country and self.state.lower() == self.country.lower():
+            raise ValidationError({"country": "Country can't be the same as State."})
+
+        return super().clean()
 
     def __str__(self):
-        return f"{self.user.username} {self.first_name} {self.primary_contact}"
-    
+        return f"{self.first_name}_{self.last_name}_{self.primary_contact}"
 
     class Meta:
-        verbose_name = "Contact" 
-        verbose_name_plural = "Contacts" 
+        verbose_name = "Contact"
+        verbose_name_plural = "Contact"
+        ordering = ['first_name', 'last_name']
+

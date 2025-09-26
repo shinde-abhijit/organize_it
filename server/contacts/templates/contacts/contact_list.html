@@ -1,6 +1,29 @@
 {% extends 'base.html' %}
-{% block title %}Contact List{% endblock title %}
+
+{% block title %}
+    Contact List
+{% endblock title %}
 
 {% block content %}
-    List
+<div class="flex items-center justify-center mx-auto py-8">
+    <div class="max-w-3xl w-full bg-white p-8 rounded-2xl shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Contact List</h2>   
+
+        <ul class="space-y-2">
+            {% for contact in page_obj %}
+                <li class="p-4 border rounded hover:shadow-md flex justify-between items-center">
+                    <span>{{ contact.first_name }} {{ contact.last_name }}</span>
+                    <span class="text-gray-500">{{ contact.primary_contact }}</span>
+                </li>
+            {% empty %}
+                <li class="p-4 text-gray-500">No contacts found.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Pagination controls -->
+        <div class="mt-4 flex justify-center space-x-2">
+            {% include 'components/pagination.html' %}
+        </div>
+    </div>
+</div>
 {% endblock content %}
